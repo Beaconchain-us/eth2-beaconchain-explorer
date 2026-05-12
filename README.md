@@ -1,7 +1,7 @@
 # 🔍 Eth2 Beacon Chain Explorer
 
-[![Build](https://github.com/beaconchain-com/eth2-beaconchain-explorer/actions/workflows/build.yaml/badge.svg)](https://github.com/beaconchain-com/eth2-beaconchain-explorer/actions/workflows/build.yaml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/beaconchain-com/eth2-beaconchain-explorer)](https://goreportcard.com/report/github.com/beaconchain-com/eth2-beaconchain-explorer)
+[![Build](https://github.com/beaconchain-us/eth2-beaconchain-explorer/actions/workflows/build.yaml/badge.svg)](https://github.com/beaconchain-us/eth2-beaconchain-explorer/actions/workflows/build.yaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/beaconchain-us/eth2-beaconchain-explorer)](https://goreportcard.com/report/github.com/beaconchain-us/eth2-beaconchain-explorer)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 The **Eth2 Beacon Chain Explorer** provides a comprehensive and easy‑to‑use interface for the Ethereum Beacon Chain. It allows you to view proposed blocks, follow attestations, monitor staking activity, and keep an eye on validator performance.
@@ -39,7 +39,7 @@ Track your validators on the go with the **Beaconchain Dashboard**:
 
 ```bash
 # Clone the repository
-git clone https://github.com/beaconchain-com/eth2-beaconchain-explorer.git
+git clone https://github.com/beaconchain-us/eth2-beaconchain-explorer.git
 cd eth2-beaconchain-explorer
 
 # Copy and edit the configuration
