@@ -1,0 +1,5 @@
+# Check scanner logs
+docker logs beaconchain-backend | grep "Payment scanner"
+
+# Test the wallet endpoint
+curl https://beaconcha.in/api/wallet-addresses
