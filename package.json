@@ -24,8 +24,8 @@
     "url": "git+https://github.com/gobitfly/eth2-beaconchain-explorer.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Mahdi Amolimoghaddam",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/gobitfly/eth2-beaconchain-explorer/issues"
   },
