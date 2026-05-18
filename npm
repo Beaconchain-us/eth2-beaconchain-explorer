@@ -1,0 +1,17 @@
+# Install dependencies (first time only)
+npm install
+
+# Check JavaScript style (ESLint)
+npm run check-style
+
+# Check formatting for templates and JS files (Prettier)
+npm run check-format
+
+# Automatically fix formatting issues
+npm run format
+
+# Bundle API docs using Redocly (if you have an OpenAPI spec)
+npm run bundle-api-docs
+
+# Run tests (currently just a placeholder)
+npm test
