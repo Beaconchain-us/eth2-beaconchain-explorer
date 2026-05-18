@@ -149,6 +149,22 @@
         {{ template "genesis" . }}
       {{ else }}
         {{ template "postGenesis" .Data }}
+
+        <!-- ========== START: WALLET ADDRESSES FOR API MONETIZATION ========== -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h3 class="card-title"><i class="fas fa-coins"></i> 💰 API Monetization – Pay to any address</h3>
+                <ul class="list-unstyled">
+                    <li><strong>Ethereum / BNB (BEP20):</strong> <code>0x4E94F10F0a34a0DF229e68d5902644046258D678</code></li>
+                    <li><strong>Solana (SOL/USDC):</strong> <code>D5WGQzdd6NrAWKfcSCL29DT238SVPkobKrm6VTN3AH9r</code></li>
+                    <li><strong>Bitcoin (BTC):</strong> <code>bc1qqxzu6vvzy55x2n48wpg2drfyu947pfqpcsvjsd</code></li>
+                    <li><strong>Tron (TRC20):</strong> <code>TPYGjDE7qfRkuU4h4DGincc8GsCUPK5Cw9</code></li>
+                </ul>
+                <p>After sending the required amount, email <a href="mailto:beaconchain@beaconchain.us">beaconchain@beaconchain.us</a> to receive your API key.</p>
+            </div>
+        </div>
+        <!-- ========== END: WALLET ADDRESSES ========== -->
+
       {{ end }}
     </div>
   </div>
