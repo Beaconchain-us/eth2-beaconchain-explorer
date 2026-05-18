@@ -1,0 +1,15 @@
+-- Table for storing API keys
+CREATE TABLE IF NOT EXISTS api_keys (
+    key TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    plan_name TEXT NOT NULL,
+    limit_ip INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for tracking processed transactions
+CREATE TABLE IF NOT EXISTS processed_txs (
+    tx_hash TEXT PRIMARY KEY,
+    network TEXT NOT NULL,
+    processed_at TIMESTAMP DEFAULT NOW()
+);
