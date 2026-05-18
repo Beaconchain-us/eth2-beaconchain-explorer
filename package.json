@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run check-format && npm run check-style && echo '✅ All basic checks passed. (No Go tests written yet.)'",
     "check-style": "npm run eslint-js",
     "eslint-js": "eslint static/js",
     "eslint-html": "eslint templates/**.html",
