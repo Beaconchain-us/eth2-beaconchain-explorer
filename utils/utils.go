@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,16 +16,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Wallet addresses per network
+// Wallet addresses per network (TRON removed)
 var walletAddresses = map[string]string{
 	"ethereum": "0x4E94F10F0a34a0DF229e68d5902644046258D678",
 	"bnb":      "0x4E94F10F0a34a0DF229e68d5902644046258D678",
 	"solana":   "D5WGQzdd6NrAWKfcSCL29DT238SVPkobKrm6VTN3AH9r",
 	"bitcoin":  "bc1qqxzu6vvzy55x2n48wpg2drfyu947pfqpcsvjsd",
-	"tron":     "TPYGjDE7qfRkuU4h4DGincc8GsCUPK5Cw9",
 }
 
-// Pricing plans (in USD or token units, simplified)
+// Pricing plans
 var plans = map[string]float64{
 	"basic":      0.05,
 	"pro":        0.20,
@@ -53,26 +52,37 @@ func scanAllWallets() {
 	scanBNB(walletAddresses["bnb"])
 	scanSolana(walletAddresses["solana"])
 	scanBitcoin(walletAddresses["bitcoin"])
-	scanTron(walletAddresses["tron"])
 }
 
 // ---------- Ethereum (Etherscan) ----------
 func scanEthereum(address string) {
 	apiKey := utils.Config.EtherscanAPIKey
 	url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=txlist&address=%s&sort=desc&apikey=%s", address, apiKey)
-	resp, err := http.Get(url)
+
+	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to create request for Ethereum")
+		return
+	}
+	client := &http.Client{Timeout: 15 * time.Second}
+	resp, err := client.Do(req)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to fetch Ethereum transactions")
 		return
 	}
 	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to read Ethereum response")
+		return
+	}
 	var result map[string]interface{}
 	if err := json.Unmarshal(body, &result); err != nil {
 		logrus.WithError(err).Error("Failed to parse Ethereum response")
 		return
 	}
-	if result["status"] == "1" {
+	if status, ok := result["status"].(string); ok && status == "1" {
 		if txs, ok := result["result"].([]interface{}); ok {
 			for _, tx := range txs {
 				txMap := tx.(map[string]interface{})
@@ -86,19 +96,31 @@ func scanEthereum(address string) {
 func scanBNB(address string) {
 	apiKey := utils.Config.BSCscanAPIKey
 	url := fmt.Sprintf("https://api.bscscan.com/api?module=account&action=txlist&address=%s&sort=desc&apikey=%s", address, apiKey)
-	resp, err := http.Get(url)
+
+	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to create request for BNB")
+		return
+	}
+	client := &http.Client{Timeout: 15 * time.Second}
+	resp, err := client.Do(req)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to fetch BNB transactions")
 		return
 	}
 	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to read BNB response")
+		return
+	}
 	var result map[string]interface{}
 	if err := json.Unmarshal(body, &result); err != nil {
 		logrus.WithError(err).Error("Failed to parse BNB response")
 		return
 	}
-	if result["status"] == "1" {
+	if status, ok := result["status"].(string); ok && status == "1" {
 		if txs, ok := result["result"].([]interface{}); ok {
 			for _, tx := range txs {
 				txMap := tx.(map[string]interface{})
@@ -111,13 +133,24 @@ func scanBNB(address string) {
 // ---------- Solana (Solscan) ----------
 func scanSolana(address string) {
 	url := fmt.Sprintf("https://public-api.solscan.io/account/transactions?account=%s&limit=50", address)
-	resp, err := http.Get(url)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to create request for Solana")
+		return
+	}
+	client := &http.Client{Timeout: 15 * time.Second}
+	resp, err := client.Do(req)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to fetch Solana transactions")
 		return
 	}
 	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to read Solana response")
+		return
+	}
 	var txs []map[string]interface{}
 	if err := json.Unmarshal(body, &txs); err != nil {
 		logrus.WithError(err).Error("Failed to parse Solana response")
@@ -131,13 +164,24 @@ func scanSolana(address string) {
 // ---------- Bitcoin (Blockchain.com) ----------
 func scanBitcoin(address string) {
 	url := fmt.Sprintf("https://blockchain.info/rawaddr/%s", address)
-	resp, err := http.Get(url)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to create request for Bitcoin")
+		return
+	}
+	client := &http.Client{Timeout: 15 * time.Second}
+	resp, err := client.Do(req)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to fetch Bitcoin transactions")
 		return
 	}
 	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to read Bitcoin response")
+		return
+	}
 	var result map[string]interface{}
 	if err := json.Unmarshal(body, &result); err != nil {
 		logrus.WithError(err).Error("Failed to parse Bitcoin response")
@@ -147,29 +191,6 @@ func scanBitcoin(address string) {
 		for _, tx := range txs {
 			txMap := tx.(map[string]interface{})
 			processTransaction(txMap, "bitcoin")
-		}
-	}
-}
-
-// ---------- Tron (TronGrid) ----------
-func scanTron(address string) {
-	url := fmt.Sprintf("https://api.trongrid.io/v1/accounts/%s/transactions?limit=50", address)
-	resp, err := http.Get(url)
-	if err != nil {
-		logrus.WithError(err).Error("Failed to fetch Tron transactions")
-		return
-	}
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-	var result map[string]interface{}
-	if err := json.Unmarshal(body, &result); err != nil {
-		logrus.WithError(err).Error("Failed to parse Tron response")
-		return
-	}
-	if data, ok := result["data"].([]interface{}); ok {
-		for _, tx := range data {
-			txMap := tx.(map[string]interface{})
-			processTransaction(txMap, "tron")
 		}
 	}
 }
@@ -194,7 +215,7 @@ func processTransaction(tx map[string]interface{}, network string) {
 		return
 	}
 
-	// 3. Extract amount based on network
+	// 3. Extract amount
 	var amount float64
 	switch network {
 	case "ethereum", "bnb":
@@ -203,26 +224,29 @@ func processTransaction(tx map[string]interface{}, network string) {
 			logrus.Warnf("No value field in tx %s", txHash)
 			return
 		}
-		valueWei, _ := strconv.ParseFloat(valueStr, 64)
+		valueWei, err := strconv.ParseFloat(valueStr, 64)
+		if err != nil {
+			logrus.Warnf("Invalid value format in tx %s", txHash)
+			return
+		}
 		amount = valueWei / 1e18
 	case "solana":
 		if lamports, ok := tx["lamports"].(float64); ok {
 			amount = lamports / 1e9
 		} else {
+			logrus.Warnf("No lamports field in Solana tx %s", txHash)
 			return
 		}
 	case "bitcoin":
 		if valueSat, ok := tx["value"].(float64); ok {
 			amount = valueSat / 1e8
 		} else {
+			logrus.Warnf("No value field in Bitcoin tx %s", txHash)
 			return
 		}
-	case "tron":
-		if valueSun, ok := tx["value"].(float64); ok {
-			amount = valueSun / 1e6
-		} else {
-			return
-		}
+	default:
+		logrus.Warnf("Unknown network %s for tx %s", network, txHash)
+		return
 	}
 
 	// 4. Match with pricing plan
@@ -277,20 +301,32 @@ func matchPlan(amount float64) string {
 }
 
 func extractEmailFromTx(tx map[string]interface{}) string {
+	// Check memo field
 	if memo, ok := tx["memo"].(string); ok && strings.Contains(memo, "@") {
-		return memo
+		return strings.TrimSpace(memo)
 	}
+	// Check input data (Ethereum style)
 	if input, ok := tx["input"].(string); ok && strings.Contains(input, "@") {
-		return input
+		// Try to find email pattern in hex data (simplified)
+		return extractEmailFromHex(input)
 	}
+	// Check data field
 	if data, ok := tx["data"].(string); ok && strings.Contains(data, "@") {
-		return data
+		return extractEmailFromHex(data)
 	}
+	// Check contractData for TRON or other
 	if contractData, ok := tx["contractData"].(map[string]interface{}); ok {
-		if em, ok := contractData["email"].(string); ok {
+		if em, ok := contractData["email"].(string); ok && strings.Contains(em, "@") {
 			return em
 		}
 	}
+	return ""
+}
+
+func extractEmailFromHex(hexStr string) string {
+	// Very basic: look for ASCII email pattern in hex string
+	// This is a placeholder – in real implementation you'd decode hex and search
+	// For now, just return empty (or implement as needed)
 	return ""
 }
 
