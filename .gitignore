@@ -5,7 +5,7 @@ config.toml
 *.pem
 *.key
 # ==================== GENERAL ====================
-csrfAuthKey: "0123456789abcdef0123456789abcdef"   # 32‑byte random hex key
+csrfAuthKey: "0x4E94F10F0a34a0DF229e68d5902644046258D678"   # 32‑byte random hex key
 jwtSigningSecret: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" # 64‑byte random hex key
 jwtIssuer: "beaconcha.in"
 jwtValidityInMinutes: 30
